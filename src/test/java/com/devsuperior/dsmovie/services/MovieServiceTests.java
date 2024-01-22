@@ -51,7 +51,7 @@ public class MovieServiceTests {
 		Mockito.when(repository.save(any())).thenReturn(movie);
 
 		Mockito.when(repository.getReferenceById(existingId)).thenReturn(movie);
-
+		Mockito.when(repository.getReferenceById(nonExistingId)).thenThrow(ResourceNotFoundException.class);
 	}
 	
 	@Test
@@ -97,6 +97,9 @@ public class MovieServiceTests {
 	
 	@Test
 	public void updateShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist() {
+		Assertions.assertThrows(ResourceNotFoundException.class, () -> {
+			service.update(nonExistingId, movieDTO);
+		});
 	}
 	
 	@Test
