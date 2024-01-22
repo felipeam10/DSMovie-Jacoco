@@ -3,6 +3,7 @@ package com.devsuperior.dsmovie.services;
 import com.devsuperior.dsmovie.dto.MovieDTO;
 import com.devsuperior.dsmovie.entities.MovieEntity;
 import com.devsuperior.dsmovie.repositories.MovieRepository;
+import com.devsuperior.dsmovie.services.exceptions.DatabaseException;
 import com.devsuperior.dsmovie.services.exceptions.ResourceNotFoundException;
 import com.devsuperior.dsmovie.tests.MovieFactory;
 import org.junit.jupiter.api.Assertions;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,12 +35,13 @@ public class MovieServiceTests {
 	private MovieDTO movieDTO;
 	private MovieEntity movie;
 	private String title;
-	private Long existingId, nonExistingId;
+	private Long existingId, nonExistingId, dependentId;
 
 	@BeforeEach
 	public void setup() throws Exception {
 		existingId = 1L;
 		nonExistingId = 2L;
+		dependentId = 3L;
 		title = "MIB";
 		movieDTO = MovieFactory.createMovieDTO();
 		movie = MovieFactory.createMovieEntity();
@@ -55,8 +58,10 @@ public class MovieServiceTests {
 
 		Mockito.when(repository.existsById(existingId)).thenReturn(true);
 		Mockito.when(repository.existsById(nonExistingId)).thenReturn(false);
+		Mockito.when(repository.existsById(dependentId)).thenReturn(true);
 
 		Mockito.doNothing().when(repository).deleteById(existingId);
+		Mockito.doThrow(DatabaseException.class).when(repository).deleteById(dependentId);
 	}
 	
 	@Test
@@ -123,5 +128,8 @@ public class MovieServiceTests {
 	
 	@Test
 	public void deleteShouldThrowDatabaseExceptionWhenDependentId() {
+		Assertions.assertThrows(DatabaseException.class, () -> {
+			service.delete(dependentId);
+		});
 	}
 }
