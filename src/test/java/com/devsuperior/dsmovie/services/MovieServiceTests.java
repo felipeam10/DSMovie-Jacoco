@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -31,15 +32,18 @@ public class MovieServiceTests {
 	private MovieDTO movieDTO;
 	private MovieEntity movie;
 	private String title;
+	private Long existingId;
 
 	@BeforeEach
 	public void setup() throws Exception {
+		existingId = 1L;
 		title = "MIB";
 		movieDTO = MovieFactory.createMovieDTO();
 		movie = MovieFactory.createMovieEntity();
 		PageImpl<MovieEntity> page = new PageImpl<>(List.of(movie));
 
 		Mockito.when(repository.searchByTitle(any(), any())).thenReturn(page);
+		Mockito.when(repository.findById(existingId)).thenReturn(Optional.of(movie));
 	}
 	
 	@Test
@@ -52,6 +56,13 @@ public class MovieServiceTests {
 	
 	@Test
 	public void findByIdShouldReturnMovieDTOWhenIdExists() {
+		MovieDTO result = service.findById(movie.getId());
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(movie.getId(), result.getId());
+		Assertions.assertEquals(movie.getTitle(), result.getTitle());
+		Assertions.assertEquals(movie.getScore(), result.getScore());
+		Assertions.assertEquals(movie.getCount(), result.getCount());
+		Assertions.assertEquals(movie.getImage(), result.getImage());
 	}
 	
 	@Test
