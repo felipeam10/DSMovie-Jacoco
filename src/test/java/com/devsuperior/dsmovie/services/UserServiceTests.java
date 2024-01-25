@@ -1,10 +1,23 @@
 package com.devsuperior.dsmovie.services;
 
+import com.devsuperior.dsmovie.entities.UserEntity;
+import com.devsuperior.dsmovie.projections.UserDetailsProjection;
+import com.devsuperior.dsmovie.repositories.UserRepository;
+import com.devsuperior.dsmovie.tests.UserDetailsFactory;
+import com.devsuperior.dsmovie.tests.UserFactory;
+import com.devsuperior.dsmovie.utils.CustomUserUtil;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
@@ -12,9 +25,34 @@ public class UserServiceTests {
 
 	@InjectMocks
 	private UserService service;
+	@Mock
+	private UserRepository	repository;
+	@Mock
+	private CustomUserUtil userUtil;
+	private UserEntity user;
+	private String existingUsername;
+	private String nonExistingUsername;
+	private List<UserDetailsProjection> userDetails;
+
+	@BeforeEach
+	public void setup() throws Exception {
+		existingUsername = "maria@gmail.com";
+		nonExistingUsername = "jose@gmail.com";
+
+		user = UserFactory.createUserEntity();
+		userDetails = UserDetailsFactory.createCustomAdminClientUser(existingUsername);
+
+		Mockito.when(repository.searchUserAndRolesByUsername(existingUsername)).thenReturn(userDetails);
+
+		Mockito.when(repository.findByUsername(existingUsername)).thenReturn(Optional.of(user));
+	}
 
 	@Test
 	public void authenticatedShouldReturnUserEntityWhenUserExists() {
+		Mockito.when(userUtil.getLoggedUsername()).thenReturn(existingUsername);
+		UserEntity result = service.authenticated();
+		Assertions.assertNotNull(result);
+		Assertions.assertEquals(result.getUsername(), existingUsername);
 	}
 
 	@Test
