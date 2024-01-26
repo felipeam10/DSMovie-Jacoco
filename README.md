@@ -6,6 +6,7 @@
 
 - [Sobre](#sobre)
 - [Casos de uso](#casos-de-uso)
+- [Relatório Jacoco](#relatorio-jacoco)
 - [Como executar o projeto](#como-executar-o-projeto)
 - [Tecnologias Utilizadas](#tecnologias-utilizadas)
 - [Como Contribuir](#como-contribuir)
@@ -31,25 +32,77 @@ A especificação do que foi implementado está no próprio código fonte dos te
 
 [Voltar ao Índice](#índice)
 
+## Relatório Jacoco
+
+### Configuração:
+
+```xml
+<plugin>
+    <groupId>org.jacoco</groupId>
+    <artifactId>jacoco-maven-plugin</artifactId>
+    <version>0.8.7</version>
+    <configuration>
+        <excludes>
+            <exclude>com/devsuperior/dsmovie/DsmovieApplication.class</exclude>
+            <exclude>com/devsuperior/dsmovie/config/**</exclude>
+            <exclude>com/devsuperior/dsmovie/entities/**</exclude>
+            <exclude>com/devsuperior/dsmovie/dto/**</exclude>
+            <exclude>com/devsuperior/dsmovie/controllers/**</exclude>
+            <exclude>com/devsuperior/dsmovie/controllers/handlers/**</exclude>
+            <exclude>com/devsuperior/dsmovie/services/exceptions/**</exclude>
+            <exclude>com/devsuperior/dsmovie/utils/**</exclude>
+        </excludes>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>prepare-agent</goal>
+            </goals>
+        </execution>
+        <execution>
+            <id>jacoco-report</id>
+            <phase>prepare-package</phase>
+            <goals>
+                <goal>report</goal>
+            </goals>
+            <configuration>
+                <outputDirectory>target/jacoco-report</outputDirectory>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+### Relatório final:
+
+<div align="center">
+  <img src="src/main/resources/final_report.png" alt="Diagrama de Classes">
+</div>
+
+[Voltar ao Índice](#índice)
+
 ## Casos de Uso
 
-### Listar filmes:
-1. [OUT] O sistema apresenta uma listagem dos nomes de todos gêneros, bem como uma
-      listagem paginada com título, subtítulo, ano e imagem dos filmes, ordenada
-      alfabeticamente por título.
-2. [IN] O usuário visitante ou membro seleciona, opcionalmente, um gênero.
-3. [OUT] O sistema apresenta a listagem atualizada, restringindo somente ao gênero
-   selecionado.
+### MovieServiceTests:
+- findAllShouldReturnPagedMovieDTO
+- findByIdShouldReturnMovieDTOWhenIdExists
+- findByIdShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist
+- insertShouldReturnMovieDTO
+- updateShouldReturnMovieDTOWhenIdExists
+- updateShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist
+- deleteShouldDoNothingWhenIdExists
+- deleteShouldThrowResourceNotFoundExceptionWhenIdDoesNotExist
+- deleteShouldThrowDatabaseExceptionWhenDependentId
 
-### Visualizar detalhes do filme:
-1. [IN] O usuário visitante ou membro seleciona um filme
-   https://devsuperior.com.br
-2. [OUT] O sistema informa título, subtítulo, ano, imagem e sinopse do filme, e também
-   uma listagem dos textos das avaliações daquele filme juntamente com nome do usuário
-   que fez cada avaliação.
-3. [IN] O usuário membro informa, opcionalmente, um texto para avaliação do filme.
-4. [OUT] O sistema apresenta os dados atualizados, já aparecendo também a avaliação
-   feita pelo usuário.
+### ScoreServiceTests:
+- saveScoreShouldReturnMovieDTO
+- saveScoreShouldThrowResourceNotFoundExceptionWhenNonExistingMovieId
+
+### ScoreServiceTests:
+- authenticatedShouldReturnUserEntityWhenUserExists
+- authenticatedShouldThrowUsernameNotFoundExceptionWhenUserDoesNotExists
+- loadUserByUsernameShouldReturnUserDetailsWhenUserExists
+- loadUserByUsernameShouldThrowUsernameNotFoundExceptionWhenUserDoesNotExists
 
 [Voltar ao Índice](#índice)
 
@@ -58,7 +111,7 @@ A especificação do que foi implementado está no próprio código fonte dos te
 
 1. Clonar o projeto a partir do GitHub
 
-   ````https://github.com/felipeam10/Movieflix````
+   ````https://github.com/felipeam10/DSMovie-Jacoco````
 
 2. Em sua IDE de preferência, abra o projeto a partir do diretório que o mesmo foi clonado. 
 
