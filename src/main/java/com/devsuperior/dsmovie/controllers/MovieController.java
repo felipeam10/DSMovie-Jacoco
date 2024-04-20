@@ -2,6 +2,7 @@ package com.devsuperior.dsmovie.controllers;
 
 import java.net.URI;
 
+import com.devsuperior.dsmovie.dto.MovieGenreDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -49,6 +50,13 @@ public class MovieController {
 		return service.findAll(title, pageable);
 	}
 
+	@GetMapping(produces = "application/vdn.devsuperior.dsmovie-v1+json")
+	public Page<MovieGenreDTO> findAllV1(
+			@RequestParam(value="title", defaultValue = "") String title,
+			Pageable pageable) {
+		return service.findAllMovieGenre(title, pageable);
+	}
+
 	@Operation(
 			description = "Get movie by id",
 			summary = "List movie per id",
@@ -60,6 +68,19 @@ public class MovieController {
 	@GetMapping(value = "/{id}", produces = "application/json")
 	public MovieDTO findById(@PathVariable Long id) {
 		return service.findById(id);
+	}
+
+	@Operation(
+			description = "Get movie by id",
+			summary = "List movie per id",
+			responses = {
+					@ApiResponse(description = "OK", responseCode = "200"),
+					@ApiResponse(description = "Not Found", responseCode = "404")
+			}
+	)
+	@GetMapping(value = "/{id}", produces = "application/vdn.devsuperior.dsmovie-v1+json")
+	public MovieGenreDTO findByIdV1(@PathVariable Long id) {
+		return service.findByIdMovieGenre(id);
 	}
 
 	@Operation(
