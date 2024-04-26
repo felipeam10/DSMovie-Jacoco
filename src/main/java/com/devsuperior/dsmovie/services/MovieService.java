@@ -1,5 +1,9 @@
 package com.devsuperior.dsmovie.services;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+import com.devsuperior.dsmovie.controllers.MovieController;
 import com.devsuperior.dsmovie.dto.MovieGenreDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -25,7 +29,9 @@ public class MovieService {
 	@Transactional(readOnly = true)
 	public Page<MovieDTO> findAll(String title, Pageable pageable) {
 		Page<MovieEntity> result = repository.searchByTitle(title, pageable);
-		return result.map(x -> new MovieDTO(x));
+		return result.map(x -> new MovieDTO(x)
+				.add(linkTo(methodOn(MovieController.class).findAll(null, null)).withSelfRel())
+				.add(linkTo(methodOn(MovieController.class).findById(x.getId())).withRel("Get Movie By ID")));
 	}
 
 	@Transactional(readOnly = true)
